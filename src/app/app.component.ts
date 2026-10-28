@@ -4,14 +4,14 @@ import { ToastOutletComponent } from '@ngx-templates/shared/toasts';
 
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
-import { TextEditorComponent } from './shared/text-editor/text-editor.component';
+import { AlignerComponent } from './aligner/aligner.component';
 
 @Component({
   selector: 'ate-root',
   imports: [
     HeaderComponent,
     FooterComponent,
-    TextEditorComponent,
+    AlignerComponent,
     ModalOutletComponent,
     ToastOutletComponent,
   ],

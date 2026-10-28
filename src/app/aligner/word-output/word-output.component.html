@@ -1,0 +1,13 @@
+<p class="word-output">
+  @for (w of words(); track $index) {
+    <span
+      class="word"
+      [class.match]="highlighted().has($index + 1)"
+      [class.has-footnote]="!!w.footnote"
+      [attr.title]="titleOf(w) || null"
+      (mouseenter)="hover.emit({ side: side(), idx: $index + 1 })"
+      (mouseleave)="hover.emit(null)"
+      >{{ w.word }}</span
+    >{{ ' ' }}
+  }
+</p>

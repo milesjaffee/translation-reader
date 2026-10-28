@@ -1,0 +1,99 @@
+<form [formGroup]="form" (ngSubmit)="align()">
+  <div class="field-pair">
+    <label>
+      Source language
+      <input type="text" formControlName="source_lang" placeholder="ex. en..." />
+    </label>
+    <label class="grow">
+      Source text
+      <textarea formControlName="source" rows="6"></textarea>
+    </label>
+  </div>
+  <div class="field-pair">
+    <label>
+      Translation language
+      <input type="text" formControlName="target_lang" placeholder="ex. es..." />
+    </label>
+    <label class="grow">
+      Translation text
+      <textarea formControlName="target" rows="6"></textarea>
+    </label>
+  </div>
+  <div class="actions">
+    <button ngx-button btnType="primary" type="submit" [disabled]="loading()">
+      Align
+    </button>
+    <span class="status">{{ status() }}</span>
+  </div>
+</form>
+
+@if (result(); as r) {
+  <section class="result">
+    <div class="result-header">
+      <h2>Source</h2>
+      <button
+        ngx-button
+        btnType="secondary"
+        size="compact"
+        type="button"
+        [disabled]="savedCurrent()"
+        (click)="save()"
+      >
+        {{ savedCurrent() ? 'Saved' : 'Save' }}
+      </button>
+    </div>
+    <ate-word-output
+      side="source"
+      [words]="r.source"
+      [otherWords]="r.translation"
+      [hovered]="hovered()"
+      (hover)="hovered.set($event)"
+    />
+    <h2>Translation</h2>
+    <ate-word-output
+      side="translation"
+      [words]="r.translation"
+      [otherWords]="r.source"
+      [hovered]="hovered()"
+      (hover)="hovered.set($event)"
+    />
+    <button
+      ngx-button
+      btnType="secondary"
+      size="compact"
+      type="button"
+      (click)="showRaw.set(!showRaw())"
+    >
+      {{ showRaw() ? 'Hide' : 'Show' }} raw
+    </button>
+    @if (showRaw()) {
+      <pre class="raw">{{ r | json }}</pre>
+    }
+  </section>
+}
+
+@if (saved().length) {
+  <section class="saved">
+    <h2>Saved</h2>
+    <ul>
+      @for (t of saved(); track t.id) {
+        <li>
+          <button class="link" type="button" (click)="open(t)">
+            {{ t.request.source_lang }} → {{ t.request.target_lang }}:
+            {{ t.request.source.slice(0, 60) }}{{ t.request.source.length > 60 ? '…' : '' }}
+          </button>
+          <span class="date">{{ t.createdAt | date: 'short' }}</span>
+          <button
+            ngx-button
+            btnType="danger"
+            size="minimal"
+            type="button"
+            (click)="remove(t)"
+          >
+            Delete
+          </button>
+        </li>
+      }
+    </ul>
+  </section>
+}

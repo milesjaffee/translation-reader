@@ -1,31 +1,31 @@
-# AI Text Editor Angular app template
+# Translation Reader
 
-AI-powered editor that provides text enhancement tools and supports basic formatting.
+Aligns a source text with its translation word-by-word and annotates each word
+(meanings, transliteration, footnotes). Hover a word to highlight its matches
+on the other side. Angular port of `ai-translation-precursor-code`, using Gemini.
 
-The template has an implemented state management and API layer, plus a mocked API for demonstration purposes. It can be disabled from `app.config.ts`. This way, the template will perform network calls to your specified API URL set in `environment/`. Note that API-s already have a predefined design that can be explored both at the API layers or the mocks. Your API should follow that design or, alternatively, update the template API layer so that it suits your specific needs.
-
-To start a local development server, run:
+## Setup
 
 ```bash
-ng serve
+npm install
+cp .env.example .env   # then set GEMINI_API_KEY (and optionally GEMINI_MODEL)
+npm start              # http://localhost:4200
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Layout
 
-## Building
+- `src/server/` — Node-only alignment pipeline (tokenization via `Intl.Segmenter`,
+  sentence grouping + word alignment via Gemini structured output, few-shot data).
+- `src/server.ts` — Express routes: `POST /api/align`, `GET /health`. The API key
+  is only read here and never reaches the browser.
+- `src/app/aligner/` — form and hoverable word output.
+- `src/app/firebase/` — stubs for Firebase config, auth (fixed local dev user), and
+  `TranslationStore` (local-storage implementation; swap for Firestore in
+  `app.config.ts`).
 
-To build the project run:
+## Building / tests
 
 ```bash
 ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
 ng test
 ```

@@ -1,3 +1,4 @@
 export interface Environment {
-  geminiApiUrl: string;
+  /** Base URL of the Express API in src/server.ts. Empty = same origin. */
+  apiBaseUrl: string;
 }
