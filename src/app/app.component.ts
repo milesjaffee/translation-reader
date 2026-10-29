@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { ModalOutletComponent } from '@ngx-templates/shared/modal';
 import { ToastOutletComponent } from '@ngx-templates/shared/toasts';
 
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
-import { AlignerComponent } from './aligner/aligner.component';
 
 @Component({
-  selector: 'ate-root',
+  selector: 'cr-root',
   imports: [
+    RouterOutlet,
     HeaderComponent,
     FooterComponent,
-    AlignerComponent,
     ModalOutletComponent,
     ToastOutletComponent,
   ],

@@ -7,7 +7,12 @@
 export const LATIN_SCRIPT_LANGS = new Set(['en', 'es', 'fr', 'de', 'it', 'pt', 'tr', 'nl', 'sv', 'id', 'vi', 'pl', 'ro', 'hu', 'da', 'fi', 'no', 'cs', 'sk', 'sl', 'hr', 'lt', 'lv', 'et']);
 
 // Scripts that don't use whitespace between words at all.
-export const NO_SPACE_SCRIPTS = new Set(['zh', 'ja', 'th', 'lo', 'km', 'my']);
+export const NO_SPACE_SCRIPTS = new Set(['zh', 'lzh', 'yue', 'wuu', 'ja', 'th', 'lo', 'km', 'my']);
+
+/** Primary language subtag, so 'zh-TW' / 'pt_BR' / 'EN' match the sets above. */
+export function baseLang(lang: string): string {
+  return lang.trim().split(/[-_]/)[0].toLowerCase();
+}
 
 export type CjkGranularity = 'dictionary' | 'char';
 
@@ -26,7 +31,7 @@ const WORD_OR_PUNCT = /\p{N}+(?:[.,]\p{N}+)*|\p{L}+|[^\s\p{L}\p{N}]/gu;
  *   where a modern segmenter's word groupings can be anachronistic.
  */
 export function tokenize(text: string, lang: string, cjkGranularity: CjkGranularity = 'dictionary'): string[] {
-  if (!NO_SPACE_SCRIPTS.has(lang)) {
+  if (!NO_SPACE_SCRIPTS.has(baseLang(lang))) {
     return text.match(WORD_OR_PUNCT) ?? [];
   }
 

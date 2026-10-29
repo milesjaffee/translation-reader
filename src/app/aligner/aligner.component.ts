@@ -6,12 +6,12 @@ import { ButtonComponent } from '@ngx-templates/shared/button';
 import { AlignerApi } from '../api/aligner-api.service';
 import { AuthService } from '../firebase/auth.service';
 import { SavedTranslation, TranslationStore } from '../firebase/translation-store';
-import { AlignmentResult, AlignRequest } from './alignment.model';
-import { HoveredWord, WordOutputComponent } from './word-output/word-output.component';
+import { AlignmentResult, AlignRequest } from '../translation-output/alignment.model';
+import { TranslationOutputComponent } from '../translation-output/translation-output.component';
 
 @Component({
-  selector: 'ate-aligner',
-  imports: [ReactiveFormsModule, ButtonComponent, WordOutputComponent, JsonPipe, DatePipe],
+  selector: 'cr-aligner',
+  imports: [ReactiveFormsModule, ButtonComponent, TranslationOutputComponent, JsonPipe, DatePipe],
   templateUrl: './aligner.component.html',
   styleUrl: './aligner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,7 +34,6 @@ export class AlignerComponent implements OnInit {
   status = signal('');
   request = signal<AlignRequest | null>(null);
   result = signal<AlignmentResult | null>(null);
-  hovered = signal<HoveredWord | null>(null);
   showRaw = signal(false);
   saved = signal<SavedTranslation[]>([]);
   savedCurrent = signal(false);
@@ -63,7 +62,6 @@ export class AlignerComponent implements OnInit {
     this.loading.set(true);
     this.status.set(this.hasTranslation() ? 'Aligning…' : 'Translating and aligning…');
     this.result.set(null);
-    this.hovered.set(null);
 
     try {
       this.result.set(await this._api.align(request));
@@ -94,7 +92,6 @@ export class AlignerComponent implements OnInit {
     this.form.setValue(t.request);
     this.request.set(t.request);
     this.result.set(t.result);
-    this.hovered.set(null);
     this.savedCurrent.set(true);
     this.status.set('');
   }

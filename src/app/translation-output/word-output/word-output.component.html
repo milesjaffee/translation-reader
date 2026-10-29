@@ -1,0 +1,18 @@
+<div class="word-output">
+  @for (w of words(); track $index) {
+    @if (spaces()[$index] && !joined()[$index]) {
+      {{ ' ' }}
+    }
+    <span
+      class="word"
+      [class.hl]="highlighted().has($index + 1)"
+      [class.cur]="currentSentence() !== null && w.sentence === currentSentence()"
+      [class.has-footnote]="!!w.footnote"
+      (mouseenter)="hover.emit({ side: side(), idx: $index + 1 })"
+      (mouseleave)="hover.emit(null)"
+      >@if (joined()[$index]) {{{ ' ' }}}{{ w.word }}@if (cardIdx() === $index + 1) {
+        <cr-hover-card [word]="w" />
+      }</span
+    >
+  }
+</div>

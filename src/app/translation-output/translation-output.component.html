@@ -1,0 +1,27 @@
+<span class="lang lang-source">{{ sourceLang() }}</span>
+<span class="lang lang-target">{{ targetLang() }}</span>
+<div class="bg"></div>
+<cr-word-output
+  class="text text-source"
+  [class.no-space]="sourceNoSpace()"
+  side="source"
+  [words]="result().source"
+  [otherWords]="result().translation"
+  [text]="sourceText()"
+  [hovered]="active()"
+  (hover)="hovered.set($event)"
+/>
+<div class="divider"></div>
+<cr-word-output
+  class="text text-target"
+  [class.no-space]="targetNoSpace()"
+  side="translation"
+  [words]="result().translation"
+  [otherWords]="result().source"
+  [text]="targetText()"
+  [hovered]="active()"
+  (hover)="hovered.set($event)"
+/>
+@if (cardWord(); as w) {
+  <cr-hover-card class="stacked-card" [word]="w" />
+}

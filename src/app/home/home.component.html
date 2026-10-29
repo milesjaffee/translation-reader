@@ -1,0 +1,25 @@
+<h1>Read like a native<br />without even thinking about it.</h1>
+
+@for (demo of demos; track $index) {
+  <cr-translation-output
+    class="demo"
+    [result]="demo.result"
+    [sourceLang]="demo.sourceLang"
+    [targetLang]="demo.targetLang"
+    [sourceText]="demo.sourceText"
+    [targetText]="demo.targetText"
+    [defaultHover]="demo.defaultHover"
+  />
+  @if ($first) {
+    <p class="blurb">
+      Cratylus is a service for language understanding. Read word-by-word like
+      a native speaker. See how another country phrases their news, understand
+      puns and references, or live out the glory of French avant-garde poetry.
+    </p>
+  }
+}
+
+<div class="cta">
+  <a class="cr-button" routerLink="/you">Sign up</a>
+  <a class="cr-button" routerLink="/pricing">Pricing</a>
+</div>

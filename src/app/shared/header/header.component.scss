@@ -1,14 +1,42 @@
+@use 'screen-breakpoints' as bp;
+
 :host {
-  width: 100%;
   display: block;
 
   header {
     position: relative;
-    max-width: var(--app-max-width);
-    margin: 0 auto;
+    z-index: 1;
+    height: 153px;
+    background: url('/header-shape.svg') center / 100% 100% no-repeat;
+
+    @include bp.bp-600w {
+      height: 110px;
+    }
+  }
+
+  nav {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: space-between;
-    padding: 32px 16px 16px 16px;
+    gap: 0.25rem 1rem;
+    padding: 22px 4% 0;
+    font-size: clamp(1rem, 3vw, 2.25rem);
+
+    @include bp.bp-600w {
+      padding-top: 14px;
+    }
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .logo {
+    font-weight: 700;
   }
 }

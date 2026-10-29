@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AppLogoComponent } from '@ngx-templates/shared/app-logo';
-import { THEME_COMPONENTS } from '@ngx-templates/shared/theme';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'ate-header',
-  imports: [AppLogoComponent, THEME_COMPONENTS],
+  selector: 'cr-header',
+  imports: [RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

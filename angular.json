@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ai-text-editor": {
+    "cratylus": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -12,12 +12,12 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "ate",
+      "prefix": "cr",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/ai-text-editor",
+            "outputPath": "dist/cratylus",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -37,8 +37,7 @@
               }
             ],
             "styles": [
-              "src/styles.scss",
-              "node_modules/@ngx-templates/shared/theme/src/theme.scss"
+              "src/styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -93,10 +92,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ai-text-editor:build:production"
+              "buildTarget": "cratylus:build:production"
             },
             "development": {
-              "buildTarget": "ai-text-editor:build:development"
+              "buildTarget": "cratylus:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -125,8 +124,7 @@
               }
             ],
             "styles": [
-              "src/styles.scss",
-              "node_modules/@ngx-templates/shared/theme/src/theme.scss"
+              "src/styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [

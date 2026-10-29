@@ -4,7 +4,7 @@
 // JSON Schema equivalents of the precursor's Pydantic models, passed to
 // Gemini as `responseJsonSchema`.
 
-import { LATIN_SCRIPT_LANGS } from './tokenize';
+import { LATIN_SCRIPT_LANGS, baseLang } from './tokenize';
 
 /** What the model returns per word. Deliberately excludes 'word' -- we already
  * know the word text from our own tokenizer, so the model is never asked to
@@ -18,6 +18,8 @@ export interface WordAnnotation {
 
 export interface AlignedWord extends WordAnnotation {
   word: string;
+  /** 0-based sentence-group index, shared by both sides (set by alignDocument, not the model). */
+  sentence?: number;
 }
 
 export interface Alignment<W = AlignedWord> {
@@ -60,8 +62,8 @@ export function alignmentSchema(sourceLang: string, targetLang: string, numSourc
   return {
     type: 'object',
     properties: {
-      source: { type: 'array', items: wordAnnotationSchema(!LATIN_SCRIPT_LANGS.has(sourceLang)), minItems: numSource, maxItems: numSource },
-      translation: { type: 'array', items: wordAnnotationSchema(!LATIN_SCRIPT_LANGS.has(targetLang)), minItems: numTarget, maxItems: numTarget },
+      source: { type: 'array', items: wordAnnotationSchema(!LATIN_SCRIPT_LANGS.has(baseLang(sourceLang))), minItems: numSource, maxItems: numSource },
+      translation: { type: 'array', items: wordAnnotationSchema(!LATIN_SCRIPT_LANGS.has(baseLang(targetLang))), minItems: numTarget, maxItems: numTarget },
     },
     required: ['source', 'translation'],
   };

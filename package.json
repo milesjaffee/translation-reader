@@ -1,5 +1,5 @@
 {
-  "name": "ai-text-editor",
+  "name": "cratylus",
   "version": "1.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:ai-text-editor": "node dist/ai-text-editor/server/server.mjs"
+    "serve:ssr:cratylus": "node dist/cratylus/server/server.mjs"
   },
   "private": true,
   "dependencies": {
@@ -23,7 +23,6 @@
     "@angular/ssr": "^20.0.0",
     "@google/genai": "^2.31.0",
     "@ngx-templates/shared": "^1.0.3",
-    "angular": "^1.8.3",
     "express": "^4.18.2",
     "firebase": "^13.1.0",
     "immutable": "^5.0.3",

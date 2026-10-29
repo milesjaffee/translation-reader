@@ -1,8 +1,59 @@
 /* You can add global styles to this file, and also import other style files */
 
+@use 'theme' as ngx-theme;
 @use 'global';
+
+// Cratylus is light-only: undo the shared theme's system dark mode.
+@media (prefers-color-scheme: dark) {
+  :root {
+    @include ngx-theme.light-theme-colors-setup;
+    color-scheme: light;
+  }
+}
+
 // Variables
 
 :root {
-  --app-max-width: 1000px;
+  --app-max-width: 1220px;
+
+  // Design tokens (Figma "homepage" frame)
+  --cr-bg: #ccddfa;
+  --cr-panel: rgba(242, 247, 255, 0.75);
+  --cr-header: #9db2ff;
+  --cr-blue: #2f00ff;
+  --cr-orange: #ff4d00;
+  --cr-green: #319200;
+  --cr-chip: #d9d9d9;
+  --cr-card-border: #af9787;
+
+  // Base size of translation output text (Latin script; CJK scales up 1.78×)
+  --cr-output-size: clamp(1.1rem, 2.95vw, 2.25rem);
+}
+
+body {
+  background: var(--cr-bg);
+  color: #000;
+}
+
+// Primary call-to-action (Figma: Sign up / Pricing)
+.cr-button {
+  display: inline-block;
+  padding: 0.3em 0.75em;
+  background: var(--cr-blue);
+  color: #fff;
+  font: inherit;
+  font-size: clamp(1.1rem, 2.8vw, 2.125rem);
+  line-height: 1.3;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.15);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
 }

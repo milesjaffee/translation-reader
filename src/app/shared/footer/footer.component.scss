@@ -6,9 +6,14 @@
 
   footer {
     @extend %body-short-03;
-    padding: 64px 0 96px 0;
+    padding: 2rem 1rem 3rem;
     text-align: center;
-    color: var(--color-quaternary);
+    color: #000;
+    background: var(--cr-header);
+
+    a {
+      color: inherit;
+    }
 
     p {
       margin: 1rem 0;

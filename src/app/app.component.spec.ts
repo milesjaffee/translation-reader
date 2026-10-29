@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { provideWindow } from '@ngx-templates/shared/services';
 import { AppComponent } from './app.component';
 
@@ -6,7 +7,7 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [provideWindow()],
+      providers: [provideWindow(), provideRouter([])],
     }).compileComponents();
   });
 

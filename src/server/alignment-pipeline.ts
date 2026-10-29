@@ -162,10 +162,10 @@ export async function alignDocument(
   let srcOffset = 0;
   let tgtOffset = 0;
 
-  const unaligned = (word: string): AlignedWord => ({ word, meaning: [], match: [], footnote: null });
 
   for (let gi = 0; gi < groups.length; gi++) {
     const { source: srcIdxs, translation: tgtIdxs } = groups[gi];
+    const unaligned = (word: string): AlignedWord => ({ word, meaning: [], match: [], footnote: null, sentence: gi });
 
     if (!srcIdxs.length || !tgtIdxs.length) {
       // Pure insertion/deletion: nothing on the other side to align
@@ -203,9 +203,11 @@ export async function alignDocument(
     const piece = await alignAndAnnotate(client, srcText, tgtText, sourceLang, targetLang, context, cjkGranularity);
     for (const w of piece.source) {
       w.match = w.match.map((m) => m + tgtOffset);
+      w.sentence = gi;
     }
     for (const w of piece.translation) {
       w.match = w.match.map((m) => m + srcOffset);
+      w.sentence = gi;
     }
     combinedSource.push(...piece.source);
     combinedTranslation.push(...piece.translation);

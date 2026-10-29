@@ -1,0 +1,45 @@
+@use 'screen-breakpoints' as bp;
+
+:host {
+  display: block;
+}
+
+.word-output {
+  line-height: 1.35;
+  color: var(--cr-green);
+}
+
+.word {
+  position: relative;
+  cursor: default;
+
+  &.has-footnote {
+    text-decoration: underline dotted;
+    text-decoration-thickness: 0.06em;
+  }
+
+  &.cur {
+    color: var(--cr-blue);
+  }
+
+  &.hl {
+    background: var(--cr-orange);
+    color: #fff;
+  }
+}
+
+cr-hover-card {
+  position: absolute;
+  top: 100%;
+  left: -0.5em;
+  z-index: 10;
+  margin-top: 0.15em;
+}
+
+// On narrow screens the stacked layout would put the card over the other
+// side's text, so TranslationOutputComponent shows it below the output instead.
+@include bp.bp-600w {
+  cr-hover-card {
+    display: none;
+  }
+}

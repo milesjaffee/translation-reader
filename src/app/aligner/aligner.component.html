@@ -51,7 +51,7 @@
   }
 
   <div class="actions">
-    <button ngx-button btnType="primary" type="submit" [disabled]="loading()">
+    <button class="cr-button" type="submit" [disabled]="loading()">
       {{ hasTranslation() ? 'Align' : 'Translate & align' }}
     </button>
     <span class="status">{{ status() }}</span>
@@ -78,28 +78,15 @@
         {{ savedCurrent() ? 'Saved' : 'Save' }}
       </button>
     </div>
-    <div class="columns">
-      <div class="column">
-        <h2>Source</h2>
-        <ate-word-output
-          side="source"
-          [words]="r.source"
-          [otherWords]="r.translation"
-          [hovered]="hovered()"
-          (hover)="hovered.set($event)"
-        />
-      </div>
-      <div class="column">
-        <h2>Translation</h2>
-        <ate-word-output
-          side="translation"
-          [words]="r.translation"
-          [otherWords]="r.source"
-          [hovered]="hovered()"
-          (hover)="hovered.set($event)"
-        />
-      </div>
-    </div>
+    @if (request(); as req) {
+      <cr-translation-output
+        [result]="r"
+        [sourceLang]="req.source_lang"
+        [targetLang]="req.target_lang"
+        [sourceText]="req.source"
+        [targetText]="r.target || req.target"
+      />
+    }
     <button
       ngx-button
       btnType="secondary"

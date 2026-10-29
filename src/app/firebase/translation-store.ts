@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { LocalStorage } from '@ngx-templates/shared/services';
 
-import { AlignmentResult, AlignRequest } from '../aligner/alignment.model';
+import { AlignmentResult, AlignRequest } from '../translation-output/alignment.model';
 
 export interface SavedTranslation {
   id: string;

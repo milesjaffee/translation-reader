@@ -1,0 +1,112 @@
+@use 'screen-breakpoints' as bp;
+
+:host {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 1.2rem;
+  font-size: var(--cr-output-size);
+}
+
+.lang {
+  grid-row: 1;
+  font-style: italic;
+  color: #000;
+  line-height: 1;
+  padding: 0 0.4em;
+  position: relative;
+  z-index: 1;
+  margin-bottom: -0.35em;
+}
+
+.lang-source {
+  grid-column: 1;
+}
+
+.lang-target {
+  grid-column: 3;
+}
+
+.bg {
+  grid-row: 2;
+  grid-column: 1 / 4;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.text {
+  grid-row: 2;
+  // In base-size units, so the larger CJK text doesn't get larger padding.
+  padding: calc(var(--cr-output-size) * 0.45) calc(var(--cr-output-size) * 0.4) calc(var(--cr-output-size) * 0.9);
+}
+
+.text-source {
+  grid-column: 1;
+}
+
+.text-target {
+  grid-column: 3;
+}
+
+.divider {
+  grid-row: 2;
+  grid-column: 2;
+  background: #000;
+  margin: 0.45em 0;
+}
+
+.stacked-card {
+  display: none;
+}
+
+.no-space {
+  font-size: 1.78em;
+  line-height: 1.2;
+}
+
+@include bp.bp-600w {
+  :host {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+  }
+
+  .lang-source,
+  .lang-target,
+  .text-source,
+  .text-target {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .lang-source {
+    order: 1;
+  }
+
+  .text-source {
+    order: 2;
+  }
+
+  .lang-target {
+    order: 3;
+    margin-top: 0.8em;
+  }
+
+  .text-target {
+    order: 4;
+  }
+
+  .text {
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  .bg,
+  .divider {
+    display: none;
+  }
+
+  .stacked-card {
+    display: flex;
+    order: 5;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}

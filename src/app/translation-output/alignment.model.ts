@@ -8,6 +8,8 @@ export interface AlignedWord {
   match: number[];
   footnote: string | null;
   latin?: string | null;
+  /** 0-based sentence-group index, shared by both sides. Absent on older saved results. */
+  sentence?: number;
 }
 
 export interface AlignmentResult {

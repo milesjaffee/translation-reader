@@ -1,6 +1,6 @@
-# Translation Reader
+# Cratylus
 
-Aligns a source text with its translation word-by-word and annotates each word
+Cratylus aligns a source text with its translation word-by-word and annotates each word
 (meanings, transliteration, footnotes). Hover a word to highlight its matches
 on the other side. Angular port of `ai-translation-precursor-code`
 

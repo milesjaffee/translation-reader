@@ -1,0 +1,33 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="1220" height="1514" viewBox="0 0 1220 1514" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Grid &#194;&#183; 90px &#194;&#183; 1px black" clip-path="url(#clip0_0_15)">
+<path id="Vertical 1" d="M0.5 0L0.5 1097" stroke="black"/>
+<path id="Vertical 2" d="M90.5 0L90.5 1097" stroke="black"/>
+<path id="Vertical 3" d="M180.5 0L180.5 1097" stroke="black"/>
+<path id="Vertical 4" d="M270.5 0L270.5 1097" stroke="black"/>
+<path id="Vertical 5" d="M360.5 0L360.5 1097" stroke="black"/>
+<path id="Vertical 6" d="M450.5 0L450.5 1097" stroke="black"/>
+<path id="Vertical 7" d="M540.5 0L540.5 1097" stroke="black"/>
+<path id="Vertical 8" d="M630.5 0L630.5 1097" stroke="black"/>
+<path id="Vertical 9" d="M721.5 0L721.5 1097" stroke="black"/>
+<path id="Vertical 10" d="M811.5 0L811.5 1097" stroke="black"/>
+<path id="Vertical 11" d="M901.5 0L901.5 1097" stroke="black"/>
+<path id="Vertical 12" d="M991.5 0L991.5 1097" stroke="black"/>
+<path id="Vertical 13" d="M1081.5 0V1097" stroke="black"/>
+<path id="Vertical 14" d="M1171.5 0V1097" stroke="black"/>
+<path id="Horizontal 1" d="M0 0H1220" stroke="black"/>
+<path id="Horizontal 2" d="M0 90H1220" stroke="black"/>
+<path id="Horizontal 3" d="M0 180H1220" stroke="black"/>
+<path id="Horizontal 4" d="M0 270H1220" stroke="black"/>
+<path id="Horizontal 5" d="M0 360H1220" stroke="black"/>
+<path id="Horizontal 6" d="M0 450H1220" stroke="black"/>
+<path id="Horizontal 7" d="M0 540H1220" stroke="black"/>
+<path id="Horizontal 8" d="M0 630H1220" stroke="black"/>
+<path id="Horizontal 9" d="M0 720H1220" stroke="black"/>
+<path id="Horizontal 10" d="M0 810H1220" stroke="black"/>
+</g>
+<defs>
+<clipPath id="clip0_0_15">
+<rect width="1220" height="1514" fill="white"/>
+</clipPath>
+</defs>
+</svg>

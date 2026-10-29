@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(13.2em, 80vw);
+  padding: 0.25em 0.55em 0.55em;
+  background: rgba(255, 255, 255, 0.89);
+  border: 3px solid var(--cr-card-border);
+  font-size: calc(var(--cr-output-size) * 0.89);
+  font-style: italic;
+  color: #000;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.latin {
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.meanings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    background: var(--cr-chip);
+    padding: 0.1em 0.45em;
+  }
+}
