@@ -25,9 +25,11 @@ export class AlignerComponent implements OnInit {
     source_lang: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(10)] }),
     source: new FormControl('', { nonNullable: true, validators: Validators.required }),
     target_lang: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(10)] }),
-    target: new FormControl('', { nonNullable: true, validators: Validators.required }),
+    target: new FormControl('', { nonNullable: true }),
   });
 
+  /** Whether the user supplies the translation, or the server generates one. */
+  hasTranslation = signal(false);
   loading = signal(false);
   status = signal('');
   request = signal<AlignRequest | null>(null);
@@ -41,15 +43,25 @@ export class AlignerComponent implements OnInit {
     this._loadSaved();
   }
 
+  setHasTranslation(value: boolean) {
+    this.hasTranslation.set(value);
+    const target = this.form.controls.target;
+    target.setValidators(value ? Validators.required : null);
+    target.updateValueAndValidity();
+  }
+
   async align() {
     if (this.form.invalid || this.loading()) {
       this.form.markAllAsTouched();
       return;
     }
     const request = this.form.getRawValue();
+    if (!this.hasTranslation()) {
+      request.target = '';
+    }
 
     this.loading.set(true);
-    this.status.set('Aligning…');
+    this.status.set(this.hasTranslation() ? 'Aligning…' : 'Translating and aligning…');
     this.result.set(null);
     this.hovered.set(null);
 
@@ -78,6 +90,7 @@ export class AlignerComponent implements OnInit {
   }
 
   open(t: SavedTranslation) {
+    this.setHasTranslation(!!t.request.target);
     this.form.setValue(t.request);
     this.request.set(t.request);
     this.result.set(t.result);

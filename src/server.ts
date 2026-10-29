@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 
 import { AlignmentError, alignDocument } from './server/alignment-pipeline';
 import { getClient } from './server/gemini-client';
+import { TranslateApiError, getTranslationProvider, translate } from './server/translate';
 
 // Secrets (GEMINI_API_KEY etc.) live in a gitignored .env in the project root.
 if (existsSync('.env')) {
@@ -32,13 +33,19 @@ app.get('/health', (_req, res) => {
 
 /**
  * Align a source text with its translation and annotate each word.
- * Body: { source_lang, source, target_lang, target }
+ * Body: { source_lang, source, target_lang, target? }
+ * If `target` is omitted or empty, the source is machine-translated first
+ * (see TRANSLATION_PROVIDER in src/server/translate.ts).
+ * Response: { source, translation, target, translated_by }
  */
 app.post('/api/align', async (req, res) => {
   const body = req.body ?? {};
   const errors: Record<string, string> = {};
   for (const field of ['source_lang', 'source', 'target_lang', 'target']) {
     const value = body[field];
+    if (field === 'target' && (value === undefined || value === null || value === '')) {
+      continue;
+    }
     if (typeof value !== 'string' || !value.trim()) {
       errors[field] = 'This field is required.';
     } else if (field.endsWith('_lang') && value.trim().length > 10) {
@@ -51,19 +58,21 @@ app.post('/api/align', async (req, res) => {
   }
 
   try {
-    const result = await alignDocument(
-      getClient(),
-      body.source,
-      body.target,
-      body.source_lang.trim(),
-      body.target_lang.trim(),
-    );
-    res.json(result);
+    const client = getClient();
+    const sourceLang = body.source_lang.trim();
+    const targetLang = body.target_lang.trim();
+    const translatedBy = body.target ? null : getTranslationProvider();
+    const target: string = body.target || (await translate(client, body.source, sourceLang, targetLang));
+
+    const result = await alignDocument(client, body.source, target, sourceLang, targetLang);
+    res.json({ ...result, target, translated_by: translatedBy });
   } catch (e) {
     if (e instanceof AlignmentError) {
       res.status(400).json({ detail: e.message });
     } else if (e instanceof ApiError) {
       res.status(502).json({ detail: `Gemini API error: ${e.message}` });
+    } else if (e instanceof TranslateApiError) {
+      res.status(502).json({ detail: `Google Translate API error: ${e.message}` });
     } else {
       console.error(e);
       res.status(500).json({ detail: e instanceof Error ? e.message : String(e) });

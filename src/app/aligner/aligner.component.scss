@@ -1,30 +1,60 @@
+@use 'screen-breakpoints' as bp;
+
 :host {
   display: block;
 }
 
-.field-pair {
+.checkbox {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.5rem;
   margin-bottom: 1rem;
-  align-items: flex-start;
+  cursor: pointer;
+}
 
-  label {
+// Source and translation sit side by side, stacking on narrow screens.
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @include bp.bp-600w {
+    grid-template-columns: 1fr;
+  }
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+form {
+  .columns,
+  > .column {
+    margin-bottom: 1rem;
+  }
+
+  label:not(.checkbox) {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
     font-size: 0.85rem;
     color: var(--color-tertiary);
-
-    &.grow {
-      flex: 1;
-    }
   }
 
-  input {
+  .langs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  input[type='text'] {
     width: 5rem;
   }
 
-  input,
+  input[type='text'],
   textarea {
     font: inherit;
     font-size: 1rem;
@@ -52,10 +82,21 @@
   color: var(--color-quaternary);
 }
 
+.result {
+  margin-top: 1.5rem;
+}
+
 .result-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.note {
+  color: var(--color-quaternary);
+  font-size: 0.85rem;
+  margin-right: auto;
 }
 
 .raw {
