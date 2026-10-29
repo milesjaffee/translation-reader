@@ -1,0 +1,13 @@
+{
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "auth": {
+    "providers": {
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Cratylus",
+        "supportEmail": "support@translation-reader-d125d.firebaseapp.com"
+      }
+    }
+  }
+}
