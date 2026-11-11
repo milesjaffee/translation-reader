@@ -6,7 +6,8 @@
 
   footer {
     @extend %body-short-03;
-    padding: 2rem 1rem 3rem;
+    padding: 1.5rem 1rem 2rem;
+    font-size: clamp(0.8rem, 1.5vw, 0.95rem);
     text-align: center;
     color: #000;
     background: var(--cr-header);

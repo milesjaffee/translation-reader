@@ -11,19 +11,22 @@
     max-width: var(--app-max-width);
     margin: 0 auto;
     padding-bottom: 2.5rem;
-    background: url('/grid.svg') top left / 100% auto no-repeat;
+    // One 90px cell of the 1220px-wide design grid (scaled with the canvas), tiled so it runs the full page height.
+    background: url('/grid.svg') top left / calc(100% * 90 / 1220) auto repeat;
   }
 
   // Panel tucks under the header's chevron, as in the design.
   .panel {
     position: relative;
-    margin: -110px 4% 0 4.3%;
-    padding: 5rem 1.3rem 3rem;
+    margin: calc(-1 * var(--cr-header-overlap)) 4% 0 4.3%;
+    // Start the content below the header's lowest point, so nothing sits under it.
+    padding: calc(var(--cr-header-overlap) + 1.5rem) 1.1rem 2.5rem;
     background: var(--cr-panel);
 
     @include bp.bp-600w {
-      margin: -56px 0.75rem 0;
-      padding: 3.5rem 0.75rem 2rem;
+      --cr-header-overlap: 56px;
+      margin-inline: 0.75rem;
+      padding-inline: 0.75rem;
     }
   }
 

@@ -40,7 +40,7 @@
       }
     </label>
 
-    <button class="cr-button" type="submit" [disabled]="busy()">
+    <button class="cr-button" type="submit" [disabled]="busy() || !filled()">
       {{ current() === 'signup' ? 'Sign up' : 'Sign in' }}
     </button>
   </form>

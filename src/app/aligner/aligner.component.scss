@@ -2,6 +2,7 @@
 
 :host {
   display: block;
+  font-size: var(--cr-text);
 }
 
 .checkbox {
@@ -10,6 +11,13 @@
   gap: 0.5rem;
   margin-bottom: 1rem;
   cursor: pointer;
+
+  input {
+    width: 1em;
+    height: 1em;
+    margin: 0;
+    accent-color: var(--cr-blue);
+  }
 }
 
 // Source and translation sit side by side, stacking on narrow screens.
@@ -31,8 +39,6 @@
 }
 
 form {
-  margin-top: 5vh;
-
   .columns,
   > .column {
     margin-bottom: 1rem;
@@ -42,7 +48,7 @@ form {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    font-size: 0.85rem;
+    font-size: 0.8em;
     color: var(--color-tertiary);
   }
 
@@ -53,18 +59,18 @@ form {
   }
 
   input[type='text'] {
-    width: 5rem;
+    width: 5em;
   }
 
   input[type='text'],
   textarea {
     font: inherit;
-    font-size: 1rem;
+    font-size: 1.25em; // back to the body size inside the 0.8em labels
     color: var(--color-text);
     background: var(--color-bg);
     border: 1px solid var(--color-quinary);
     border-radius: 4px;
-    padding: 0.4rem;
+    padding: 0.3em 0.4em;
   }
 
   textarea {
@@ -90,6 +96,8 @@ form {
 
 .result-header {
   display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
@@ -97,8 +105,14 @@ form {
 
 .note {
   color: var(--color-quaternary);
-  font-size: 0.85rem;
+  font-size: 0.8em;
   margin-right: auto;
+}
+
+.show-raw {
+  margin-top: 1rem;
+  font-size: 0.8em;
+  color: var(--color-quaternary);
 }
 
 .raw {
@@ -117,5 +131,5 @@ form {
 }
 
 .note-limit {
-  font-size: 0.85rem;
+  font-size: 0.8em;
 }

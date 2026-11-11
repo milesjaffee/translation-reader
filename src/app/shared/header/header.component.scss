@@ -6,7 +6,7 @@
   header {
     position: relative;
     z-index: 1;
-    height: 153px;
+    height: var(--cr-header-height);
     background: url('/header-shape.svg') center / 100% 100% no-repeat;
 
     @include bp.bp-600w {
@@ -19,8 +19,8 @@
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 0.25rem 1rem;
-    padding: 22px 4% 0;
-    font-size: clamp(1rem, 3vw, 2.25rem);
+    padding: 18px 4% 0;
+    font-size: clamp(1rem, 3vw, 1.8rem);
 
     @include bp.bp-600w {
       padding-top: 14px;

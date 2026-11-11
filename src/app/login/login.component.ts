@@ -45,8 +45,14 @@ export class LoginComponent {
     await this._run(() => this._auth.signInWithGoogle());
   }
 
+  /** Every field the current mode asks for has something in it. */
+  filled() {
+    const { name, email, password } = this.form.getRawValue();
+    return !!email && !!password && (this.current() === 'signin' || !!name.trim());
+  }
+
   async submit() {
-    if (this.form.invalid) {
+    if (this.form.invalid || !this.filled()) {
       this.form.markAllAsTouched();
       return;
     }

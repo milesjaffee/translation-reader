@@ -30,7 +30,11 @@ import { Quota, TranslationStore } from '../firebase/translation-store';
   styles: `
     :host {
       display: block;
-      font-size: clamp(1.1rem, 2.8vw, 2.125rem);
+      font-size: var(--cr-text);
+    }
+
+    .hello {
+      font-size: var(--cr-title);
     }
 
     p {
@@ -49,13 +53,10 @@ import { Quota, TranslationStore } from '../firebase/translation-store';
     }
 
     .email {
-      font-size: 0.65em;
+      font-size: 0.85em;
       font-style: italic;
     }
 
-    .cr-button--outline {
-      font-size: 0.75em;
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

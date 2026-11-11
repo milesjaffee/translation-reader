@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } 
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ButtonComponent } from '@ngx-templates/shared/button';
 
 import { AlignerApi } from '../api/aligner-api.service';
 import { AuthService } from '../firebase/auth.service';
@@ -12,7 +11,7 @@ import { TranslationOutputComponent } from '../translation-output/translation-ou
 
 @Component({
   selector: 'cr-aligner',
-  imports: [ReactiveFormsModule, RouterLink, ButtonComponent, TranslationOutputComponent, JsonPipe],
+  imports: [ReactiveFormsModule, RouterLink, TranslationOutputComponent, JsonPipe],
   templateUrl: './aligner.component.html',
   styleUrl: './aligner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

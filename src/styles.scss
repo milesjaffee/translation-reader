@@ -14,7 +14,11 @@
 // Variables
 
 :root {
-  --app-max-width: 1220px;
+  // The Figma frames are 1220px wide; the site runs at 80% of that scale.
+  --app-max-width: 976px;
+  --cr-header-height: 122px;
+  // How far the panel tucks up under the header's chevron.
+  --cr-header-overlap: 88px;
 
   // Design tokens (Figma "homepage" frame)
   --cr-bg: #ccddfa;
@@ -27,7 +31,11 @@
   --cr-card-border: #af9787;
 
   // Base size of translation output text (Latin script; CJK scales up 1.78×)
-  --cr-output-size: clamp(1.1rem, 2.95vw, 2.25rem);
+  --cr-output-size: clamp(1.1rem, 2.95vw, 1.8rem);
+
+  // Shared page type scale (the homepage runs larger on purpose)
+  --cr-text: clamp(1rem, 2vw, 1.2rem);
+  --cr-title: clamp(1.35rem, 3vw, 1.8rem);
 }
 
 body {
@@ -42,7 +50,7 @@ body {
   background: var(--cr-blue);
   color: #fff;
   font: inherit;
-  font-size: clamp(1.1rem, 2.8vw, 2.125rem);
+  font-size: var(--cr-text);
   line-height: 1.3;
   text-decoration: none;
   border: 0;
@@ -69,7 +77,6 @@ body {
 .cr-input {
   box-sizing: border-box;
   font: inherit;
-  font-size: 1.25rem;
   padding: 0.4em 0.5em;
   color: #000;
   background: #fff;

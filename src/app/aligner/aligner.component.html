@@ -51,7 +51,7 @@
   }
 
   <div class="actions">
-    <button class="cr-button" type="submit" [disabled]="loading()">
+    <button class="cr-button" type="submit" [disabled]="loading() || form.invalid">
       {{ hasTranslation() ? 'Align' : 'Translate & align' }}
     </button>
     <span class="status">{{ status() }}</span>
@@ -79,9 +79,7 @@
           </span>
         }
         <button
-          ngx-button
-          btnType="secondary"
-          size="compact"
+          class="cr-button cr-button--outline"
           type="button"
           [disabled]="saving() || atLimit()"
           (click)="save()"
@@ -100,9 +98,7 @@
       />
     }
     <button
-      ngx-button
-      btnType="secondary"
-      size="compact"
+      class="cr-text-button show-raw"
       type="button"
       (click)="showRaw.set(!showRaw())"
     >

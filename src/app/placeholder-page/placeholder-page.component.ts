@@ -8,8 +8,14 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     <p>Coming soon.</p>
   `,
   styles: `
+    :host {
+      display: block;
+      font-size: var(--cr-text);
+    }
+
     h1 {
       margin-top: 0;
+      font-size: var(--cr-title);
       font-style: italic;
       font-weight: 400;
     }
