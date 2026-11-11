@@ -1,9 +1,9 @@
 <header>
   <nav>
     <a class="logo" routerLink="/">cratylus.cc</a>
-    <a routerLink="/translate">translate</a>
-    <a routerLink="/saved">saved</a>
-    <a routerLink="/pricing">pricing</a>
-    <a routerLink="/you">you</a>
+    <a routerLink="/translate" routerLinkActive="active">translate</a>
+    <a routerLink="/saved" routerLinkActive="active" [class.active]="onTranslationPage()">saved</a>
+    <a routerLink="/pricing" routerLinkActive="active">pricing</a>
+    <a routerLink="/you" routerLinkActive="active">you</a>
   </nav>
 </header>

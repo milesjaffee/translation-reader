@@ -51,7 +51,10 @@
             "ssr": {
               "entry": "src/server.ts"
             },
+            "externalDependencies": ["firebase-admin", "firebase-admin/*"],
             "allowedCommonJsDependencies": [
+              "@grpc/grpc-js",
+              "@grpc/proto-loader",
               "agent-base",
               "debug",
               "node-domexception",

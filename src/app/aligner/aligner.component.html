@@ -67,16 +67,28 @@
           {{ r.translated_by === 'gemini' ? 'Gemini' : 'Google Translate' }}
         </span>
       }
-      <button
-        ngx-button
-        btnType="secondary"
-        size="compact"
-        type="button"
-        [disabled]="savedCurrent()"
-        (click)="save()"
-      >
-        {{ savedCurrent() ? 'Saved' : 'Save' }}
-      </button>
+      @if (savedId(); as id) {
+        <a class="saved-link" [routerLink]="['/t', id]">Saved: view &amp; share →</a>
+      } @else {
+        @if (saveError()) {
+          <span class="cr-error">{{ saveError() }}</span>
+        } @else if (atLimit()) {
+          <span class="note-limit">
+            You’ve used all {{ used() }} saved translations on the Casual plan.
+            <a routerLink="/pricing">Upgrade</a> or delete some in <a routerLink="/saved">saved</a>.
+          </span>
+        }
+        <button
+          ngx-button
+          btnType="secondary"
+          size="compact"
+          type="button"
+          [disabled]="saving() || atLimit()"
+          (click)="save()"
+        >
+          {{ saving() ? 'Saving…' : 'Save' }}
+        </button>
+      }
     </div>
     @if (request(); as req) {
       <cr-translation-output
@@ -99,31 +111,5 @@
     @if (showRaw()) {
       <pre class="raw">{{ r | json }}</pre>
     }
-  </section>
-}
-
-@if (saved().length) {
-  <section class="saved">
-    <h2>Saved</h2>
-    <ul>
-      @for (t of saved(); track t.id) {
-        <li>
-          <button class="link" type="button" (click)="open(t)">
-            {{ t.request.source_lang }} → {{ t.request.target_lang }}:
-            {{ t.request.source.slice(0, 60) }}{{ t.request.source.length > 60 ? '…' : '' }}
-          </button>
-          <span class="date">{{ t.createdAt | date: 'short' }}</span>
-          <button
-            ngx-button
-            btnType="danger"
-            size="minimal"
-            type="button"
-            (click)="remove(t)"
-          >
-            Delete
-          </button>
-        </li>
-      }
-    </ul>
   </section>
 }

@@ -57,3 +57,53 @@ body {
     cursor: default;
   }
 }
+
+// Outlined variant (secondary actions next to a .cr-button)
+.cr-button.cr-button--outline {
+  background: transparent;
+  color: var(--cr-blue);
+  box-shadow: inset 0 0 0 2px var(--cr-blue);
+}
+
+// Text inputs (Figma: Source field on the translation page)
+.cr-input {
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 1.25rem;
+  padding: 0.4em 0.5em;
+  color: #000;
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 0;
+
+  &:focus-visible {
+    outline: 2px solid var(--cr-blue);
+    outline-offset: 1px;
+  }
+}
+
+// Buttons that read as links (pager, "Forgot password?", etc.)
+.cr-text-button {
+  all: unset;
+  cursor: pointer;
+  color: inherit;
+
+  &:hover:not(:disabled) {
+    text-decoration: underline;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--cr-blue);
+    outline-offset: 2px;
+  }
+}
+
+// Inline error / confirmation text
+.cr-error {
+  color: #c00;
+}

@@ -1,0 +1,157 @@
+@use 'screen-breakpoints' as bp;
+
+:host {
+  display: block;
+  --card-text: clamp(1.1rem, 2.65vw, 2rem);
+}
+
+.title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 2.25rem;
+  margin-bottom: 2.75rem;
+  font-size: clamp(1.25rem, 2.65vw, 2rem);
+
+  h1 {
+    margin: 0;
+    font-size: inherit;
+    font-weight: 700;
+  }
+}
+
+.count {
+  padding: 0.15em 1.2em;
+  font-weight: 700;
+  background: var(--cr-header);
+  border-radius: 0.5em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transition: opacity 0.15s;
+
+  &.loading {
+    opacity: 0.5;
+  }
+
+  @include bp.bp-600w {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  li {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+}
+
+.card {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  aspect-ratio: 334 / 226;
+  padding: 0.75em 0.6em;
+  font-size: var(--card-text);
+  line-height: 1.17;
+  color: #000;
+  text-decoration: none;
+  background: #fff;
+  border: 3px solid transparent;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--cr-blue);
+    outline: none;
+  }
+
+  @include bp.bp-600w {
+    aspect-ratio: auto;
+    min-height: 6em;
+  }
+}
+
+.preview {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.shared-dot {
+  position: absolute;
+  top: 0.65em;
+  right: 0.65em;
+  width: 0.9em;
+  height: 0.9em;
+  background: color-mix(in srgb, var(--cr-green) 50%, #fff);
+  border-radius: 50%;
+
+  .tip {
+    position: absolute;
+    bottom: calc(100% + 0.55em);
+    right: 50%;
+    padding: 0 0.35em;
+    font-size: 0.8em;
+    white-space: nowrap;
+    color: #fff;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      right: 0.3em;
+      border: 0.35em solid transparent;
+      border-top-color: #000;
+    }
+  }
+
+  .card:hover &,
+  .card:focus-visible & {
+    .tip {
+      opacity: 1;
+    }
+  }
+}
+
+// Figma shows the date only under the selected card.
+.date {
+  min-height: 1.5em;
+  font-size: var(--card-text);
+  visibility: hidden;
+
+  li:hover &,
+  li:focus-within & {
+    visibility: visible;
+  }
+
+  @include bp.bp-600w {
+    visibility: visible;
+    font-size: 1rem;
+  }
+}
+
+.pager {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.6em;
+  margin-top: 3rem;
+  font-size: clamp(1.1rem, 2.65vw, 2rem);
+}
+
+.empty a {
+  color: var(--cr-blue);
+}

@@ -1,0 +1,106 @@
+@switch (view().kind) {
+  @case ('loading') {
+    <p class="status">Loading…</p>
+  }
+  @case ('missing') {
+    <h1>This translation isn’t available.</h1>
+    <p>It may have been deleted, or its owner stopped sharing it.</p>
+    <a class="cr-button" routerLink="/">Go to Cratylus</a>
+  }
+}
+
+@if (content(); as t) {
+  <cr-translation-output
+    [result]="t.result"
+    [sourceLang]="t.request.source_lang"
+    [targetLang]="t.request.target_lang"
+    [sourceText]="t.request.source"
+    [targetText]="t.result.target || t.request.target"
+  />
+
+  <div class="details">
+    <p>
+      This translation was generated on {{ t.createdAt | date: 'M/d/y' }} at
+      {{ t.createdAt | date: 'h:mm a' | lowercase }}.
+    </p>
+
+    @if (view(); as v) {
+      @if (v.kind === 'owner') {
+        @for (r of [rev()]; track r) {
+          <div class="sharing" [class.saving]="saving()">
+            <div class="row">
+              <ngx-switch
+                [on]="v.translation.shared"
+                (onChange)="setShared($event)"
+                title="Share with others"
+              />
+              <span>Share with others</span>
+              @if (v.translation.shared) {
+                <button class="copy" type="button" title="Copy link" aria-label="Copy link" (click)="copyLink()">
+                  <svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
+                    <rect x="8" y="8" width="12" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+                    <path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8" fill="none" stroke="currentColor" stroke-width="1.8" />
+                  </svg>
+                </button>
+              }
+            </div>
+
+            <div class="row">
+              <ngx-switch
+                [on]="!canShareNamed() || v.translation.anonymous"
+                (onChange)="setAnonymous($event)"
+                title="Anonymous"
+                [class.disabled]="!canShareNamed()"
+              />
+              <span>Anonymous</span>
+              @if (!canShareNamed()) {
+                <span class="hint">(your account has no name to show)</span>
+              }
+            </div>
+
+            <label class="row source">
+              <span>Source</span>
+              <span class="field">
+                <input
+                  class="cr-input"
+                  type="text"
+                  [maxLength]="noteMax"
+                  placeholder="e.g. From daodejing 1."
+                  [value]="note()"
+                  (input)="note.set($any($event.target).value)"
+                  (blur)="saveNote()"
+                  (keydown.enter)="saveNote()"
+                />
+                <span class="counter">{{ note().length }}/{{ noteMax }}</span>
+              </span>
+            </label>
+
+            @if (error()) {
+              <p class="cr-error">{{ error() }}</p>
+            }
+          </div>
+        }
+
+        <div class="owner-actions">
+          <a routerLink="/saved">← All saved translations</a>
+          <button class="cr-text-button delete" type="button" [disabled]="saving()" (click)="delete()">
+            {{ confirmDelete() ? 'Really delete? Click again' : 'Delete' }}
+          </button>
+        </div>
+      } @else if (v.kind === 'public') {
+        @if (v.translation.sourceNote) {
+          <p>
+            User <strong>{{ v.translation.authorName ?? 'anonymous' }}</strong> shared a source:
+            <strong>“{{ v.translation.sourceNote }}”</strong>
+          </p>
+        }
+        @if (!auth.user()) {
+          <p class="cta">
+            <span>Make more translations like this using Cratylus.</span>
+            <a class="cr-button" routerLink="/login" [queryParams]="{ mode: 'signup' }">Sign up</a>
+          </p>
+        }
+      }
+    }
+  </div>
+}

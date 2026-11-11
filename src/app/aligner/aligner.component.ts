@@ -1,17 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DatePipe, JsonPipe } from '@angular/common';
+import { JsonPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ButtonComponent } from '@ngx-templates/shared/button';
 
 import { AlignerApi } from '../api/aligner-api.service';
 import { AuthService } from '../firebase/auth.service';
-import { SavedTranslation, TranslationStore } from '../firebase/translation-store';
+import { CASUAL_LIMIT, QuotaExceededError, TranslationStore } from '../firebase/translation-store';
 import { AlignmentResult, AlignRequest } from '../translation-output/alignment.model';
 import { TranslationOutputComponent } from '../translation-output/translation-output.component';
 
 @Component({
   selector: 'cr-aligner',
-  imports: [ReactiveFormsModule, ButtonComponent, TranslationOutputComponent, JsonPipe, DatePipe],
+  imports: [ReactiveFormsModule, RouterLink, ButtonComponent, TranslationOutputComponent, JsonPipe],
   templateUrl: './aligner.component.html',
   styleUrl: './aligner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,11 +36,19 @@ export class AlignerComponent implements OnInit {
   request = signal<AlignRequest | null>(null);
   result = signal<AlignmentResult | null>(null);
   showRaw = signal(false);
-  saved = signal<SavedTranslation[]>([]);
-  savedCurrent = signal(false);
+  /** Id of the saved copy of the current result, once saved. */
+  savedId = signal<string | null>(null);
+  saving = signal(false);
+  saveError = signal('');
+  /** Saved translations used, or null until loaded. */
+  used = signal<number | null>(null);
+  atLimit = computed(() => (this.used() ?? 0) >= CASUAL_LIMIT);
 
-  ngOnInit() {
-    this._loadSaved();
+  async ngOnInit() {
+    const user = this._auth.user();
+    if (user) {
+      this.used.set((await this._store.quota(user.uid)).used);
+    }
   }
 
   setHasTranslation(value: boolean) {
@@ -66,7 +75,8 @@ export class AlignerComponent implements OnInit {
     try {
       this.result.set(await this._api.align(request));
       this.request.set(request);
-      this.savedCurrent.set(false);
+      this.savedId.set(null);
+      this.saveError.set('');
       this.status.set('');
     } catch (err) {
       this.status.set(`Error: ${err instanceof Error ? err.message : err}`);
@@ -79,30 +89,21 @@ export class AlignerComponent implements OnInit {
     const user = this._auth.user();
     const request = this.request();
     const result = this.result();
-    if (!user || !request || !result) {
+    if (!user || !request || !result || this.saving()) {
       return;
     }
-    await this._store.save({ ownerUid: user.uid, request, result });
-    this.savedCurrent.set(true);
-    await this._loadSaved();
-  }
-
-  open(t: SavedTranslation) {
-    this.setHasTranslation(!!t.request.target);
-    this.form.setValue(t.request);
-    this.request.set(t.request);
-    this.result.set(t.result);
-    this.savedCurrent.set(true);
-    this.status.set('');
-  }
-
-  async remove(t: SavedTranslation) {
-    await this._store.delete(t.id);
-    await this._loadSaved();
-  }
-
-  private async _loadSaved() {
-    const user = this._auth.user();
-    this.saved.set(user ? await this._store.list(user.uid) : []);
+    this.saving.set(true);
+    this.saveError.set('');
+    try {
+      this.savedId.set(await this._store.save(user.uid, request, result));
+      this.used.update((n) => (n ?? 0) + 1);
+    } catch (e) {
+      if (e instanceof QuotaExceededError) {
+        this.used.set(CASUAL_LIMIT);
+      }
+      this.saveError.set(e instanceof Error ? e.message : String(e));
+    } finally {
+      this.saving.set(false);
+    }
   }
 }

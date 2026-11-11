@@ -1,19 +1,253 @@
 rules_version = '2';
 
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: the owner's Firebase Auth uid
+// Fields:
+//   - plan: string (required, always 'casual', immutable) - subscription plan
+//   - savedCount: int (required, 0..50) - number of translations the user owns
+//   - lastSavedId: string (required, <= 40 chars) - id of the translation created
+//       in the same batch as the latest increment
+//   - lastDeletedId: string (optional, <= 40 chars) - id of the translation
+//       deleted in the same batch as the latest decrement
+// Created by the user's first save; every later save/delete must move
+// savedCount by exactly one in the same batch as the translation write. This
+// is what enforces the 50-translation Casual limit.
+//
+// Collection: translations (private to the owner)
+// Document ID: auto id
+// Fields:
+//   - ownerUid: string (required, immutable) - Auth uid of the owner
+//   - createdAt: timestamp (required, immutable, server time at create)
+//   - request: map (required, immutable) - { source_lang, source, target_lang, target }
+//   - result: map (required, immutable) - { source, translation, target, translated_by }
+//   - shared: bool (required, false at create) - whether shares/{id} exists
+//   - anonymous: bool (required, true at create) - hide the owner's name when shared
+//   - sourceNote: string (required, <= 140 chars, '' at create) - where the text is from
+//
+// Collection: shares (public by explicit product decision: share links are
+// viewable by anyone who has them, including signed-out visitors)
+// Document ID: same id as the translations doc it copies
+// Fields:
+//   - request, result, createdAt: copies of the translation's fields
+//   - sourceNote: string (<= 140 chars) - copy of the translation's note
+//   - authorName: string | null - the owner's Auth display name, or null when anonymous
+// Deliberately has no ownerUid, so anonymous shares can't be linked to an account.
+//
+// ===============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2026, 11, 24);
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    function isString(value, minLen, maxLen) {
+      return value is string && value.size() >= minLen && value.size() <= maxLen;
+    }
+
+    function translationPath(id) {
+      return /databases/$(database)/documents/translations/$(id);
+    }
+
+    function sharePath(id) {
+      return /databases/$(database)/documents/shares/$(id);
+    }
+
+    function userPath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    // { source_lang, source, target_lang, target } as sent to /api/align.
+    function isValidRequest(req) {
+      return req is map &&
+        req.keys().hasAll(['source_lang', 'source', 'target_lang', 'target']) &&
+        req.keys().hasOnly(['source_lang', 'source', 'target_lang', 'target']) &&
+        isString(req.source_lang, 1, 10) &&
+        isString(req.target_lang, 1, 10) &&
+        isString(req.source, 1, 50000) &&
+        isString(req.target, 0, 50000);
+    }
+
+    // The aligner's output. Rules can't loop over list elements, so the word
+    // entries themselves aren't validated; the 1 MiB document cap bounds them.
+    function isValidResult(res) {
+      return res is map &&
+        res.keys().hasAll(['source', 'translation', 'target', 'translated_by']) &&
+        res.keys().hasOnly(['source', 'translation', 'target', 'translated_by']) &&
+        res.source is list && res.source.size() <= 20000 &&
+        res.translation is list && res.translation.size() <= 20000 &&
+        isString(res.target, 0, 50000) &&
+        (res.translated_by == null || res.translated_by in ['gemini', 'google-translate']);
+    }
+
+    function isValidTranslation(data) {
+      return hasRequiredFields(['ownerUid', 'createdAt', 'request', 'result', 'shared', 'anonymous', 'sourceNote']) &&
+        hasOnlyAllowedFields(['ownerUid', 'createdAt', 'request', 'result', 'shared', 'anonymous', 'sourceNote']) &&
+        data.ownerUid is string &&
+        data.createdAt is timestamp &&
+        isValidRequest(data.request) &&
+        isValidResult(data.result) &&
+        data.shared is bool &&
+        data.anonymous is bool &&
+        isString(data.sourceNote, 0, 140);
+    }
+
+    function isValidUserDoc(data) {
+      return hasRequiredFields(['plan', 'savedCount', 'lastSavedId']) &&
+        hasOnlyAllowedFields(['plan', 'savedCount', 'lastSavedId', 'lastDeletedId']) &&
+        data.plan == 'casual' &&
+        data.savedCount is int && data.savedCount >= 0 && data.savedCount <= 50 &&
+        isString(data.lastSavedId, 1, 40) &&
+        (!('lastDeletedId' in data) || isString(data.lastDeletedId, 1, 40));
+    }
+
+    // The translation named by `id` is created by this same batch, for `uid`.
+    function isCreatedInThisBatch(id, uid) {
+      return !exists(translationPath(id)) &&
+        existsAfter(translationPath(id)) &&
+        getAfter(translationPath(id)).data.ownerUid == uid;
+    }
+
+    // The translation named by `id` belongs to `uid` and is deleted by this same batch.
+    function isDeletedInThisBatch(id, uid) {
+      return exists(translationPath(id)) &&
+        get(translationPath(id)).data.ownerUid == uid &&
+        !existsAfter(translationPath(id));
+    }
+
+    // A share must be an exact copy of its translation's content, with the
+    // translation marked shared in the same batch.
+    function isValidShare(id) {
+      let t = getAfter(translationPath(id)).data;
+      let data = request.resource.data;
+      return hasRequiredFields(['request', 'result', 'createdAt', 'sourceNote', 'authorName']) &&
+        hasOnlyAllowedFields(['request', 'result', 'createdAt', 'sourceNote', 'authorName']) &&
+        t.shared == true &&
+        data.request == t.request &&
+        data.result == t.result &&
+        data.createdAt == t.createdAt &&
+        data.sourceNote == t.sourceNote &&
+        // Named shares carry the Auth profile name, so it can't be spoofed.
+        ((t.anonymous == true && data.authorName == null) ||
+         (t.anonymous == false && request.auth.token.name is string &&
+          data.authorName == request.auth.token.name));
+    }
+
+    // ===============================================================
+    // users/{userId}: plan and saved-translation counter
+    // ===============================================================
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+
+      // First save: counter starts at 1, alongside creating that translation.
+      allow create: if isOwner(userId) &&
+        isValidUserDoc(request.resource.data) &&
+        !('lastDeletedId' in request.resource.data) &&
+        request.resource.data.savedCount == 1 &&
+        isCreatedInThisBatch(request.resource.data.lastSavedId, userId);
+
+      allow update: if isOwner(userId) &&
+        isValidUserDoc(request.resource.data) &&
+        request.resource.data.plan == resource.data.plan &&
+        (
+          // Save: +1 (capped at 50 by isValidUserDoc) with the new translation.
+          (request.resource.data.savedCount == resource.data.savedCount + 1 &&
+           changedKeys().hasOnly(['savedCount', 'lastSavedId']) &&
+           isCreatedInThisBatch(request.resource.data.lastSavedId, userId)) ||
+          // Delete: -1 with that translation's deletion.
+          (request.resource.data.savedCount == resource.data.savedCount - 1 &&
+           changedKeys().hasOnly(['savedCount', 'lastDeletedId']) &&
+           isDeletedInThisBatch(request.resource.data.lastDeletedId, userId))
+        );
+
+      allow delete: if false;
+    }
+
+    // ===============================================================
+    // translations/{translationId}: owner-only
+    // ===============================================================
+    match /translations/{translationId} {
+      // Also covers the saved page's `where('ownerUid', '==', uid)` query.
+      allow read: if isOwner(resource.data.ownerUid);
+
+      // Must be paired with a +1 on the owner's counter in the same batch.
+      allow create: if isAuthenticated() &&
+        isValidTranslation(request.resource.data) &&
+        request.resource.data.ownerUid == request.auth.uid &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.shared == false &&
+        request.resource.data.anonymous == true &&
+        request.resource.data.sourceNote == '' &&
+        getAfter(userPath(request.auth.uid)).data.lastSavedId == translationId &&
+        getAfter(userPath(request.auth.uid)).data.savedCount ==
+          (exists(userPath(request.auth.uid)) ? get(userPath(request.auth.uid)).data.savedCount : 0) + 1;
+
+      // Only the sharing settings can change; content and ownership are immutable.
+      // The public copy must change in the same batch: it exists exactly while
+      // shared, carrying the current note and anonymity.
+      allow update: if isOwner(resource.data.ownerUid) &&
+        isValidTranslation(request.resource.data) &&
+        changedKeys().hasOnly(['shared', 'anonymous', 'sourceNote']) &&
+        existsAfter(sharePath(translationId)) == request.resource.data.shared &&
+        (!request.resource.data.shared ||
+         (getAfter(sharePath(translationId)).data.sourceNote == request.resource.data.sourceNote &&
+          (getAfter(sharePath(translationId)).data.authorName == null) == request.resource.data.anonymous));
+
+      // Must be paired with a -1 on the owner's counter (and removal of any
+      // public copy) in the same batch.
+      allow delete: if isOwner(resource.data.ownerUid) &&
+        !existsAfter(sharePath(translationId)) &&
+        getAfter(userPath(request.auth.uid)).data.lastDeletedId == translationId &&
+        getAfter(userPath(request.auth.uid)).data.savedCount ==
+          get(userPath(request.auth.uid)).data.savedCount - 1;
+    }
+
+    // ===============================================================
+    // shares/{translationId}: public copies of shared translations
+    // ===============================================================
+    match /shares/{translationId} {
+      // Anyone with the link can open it; nobody can enumerate shares.
+      allow get: if true;
+      allow list: if false;
+
+      allow create, update: if exists(translationPath(translationId)) &&
+        isOwner(get(translationPath(translationId)).data.ownerUid) &&
+        isValidShare(translationId);
+
+      // Unsharing (translation marked unshared) or deleting the translation, in the same batch.
+      allow delete: if exists(translationPath(translationId)) &&
+        isOwner(get(translationPath(translationId)).data.ownerUid) &&
+        (!existsAfter(translationPath(translationId)) ||
+         getAfter(translationPath(translationId)).data.shared == false);
     }
   }
 }

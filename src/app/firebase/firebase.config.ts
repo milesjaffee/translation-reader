@@ -1,6 +1,5 @@
-// TODO(firebase): Fill in from the Firebase console (Project settings > Your apps)
-// once the project exists, then `npm install firebase` and initialize the app
-// with `initializeApp(firebaseConfig)` in app.config.ts.
+// Firebase web app config (Project settings > Your apps). This is public by
+// design: access is controlled by Auth and firestore.rules, not by hiding it.
 export const firebaseConfig = {
   apiKey: "AIzaSyDcNrgyDche_Gl6H8YitV1h4gXwFfsrbZQ",
   authDomain: "translation-reader-d125d.firebaseapp.com",

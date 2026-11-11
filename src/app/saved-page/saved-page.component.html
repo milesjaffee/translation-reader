@@ -1,0 +1,40 @@
+<div class="title">
+  <h1>Saved Translations</h1>
+  @if (quota(); as q) {
+    <span class="count" [attr.aria-label]="q.used + ' of ' + q.limit + ' saved'">
+      {{ q.used }} / {{ q.limit }}
+    </span>
+  }
+</div>
+
+@if (error()) {
+  <p class="cr-error">Couldn’t load your translations: {{ error() }}</p>
+} @else if (!loading() && !items().length) {
+  <p class="empty">
+    Nothing saved yet. <a routerLink="/translate">Make a translation</a> and press Save.
+  </p>
+} @else {
+  <ul class="grid" [class.loading]="loading()">
+    @for (t of items(); track t.id) {
+      <li>
+        <a class="card" [routerLink]="['/t', t.id]">
+          <span class="preview" [attr.lang]="t.request.source_lang">{{ t.request.source }}</span>
+          @if (t.shared) {
+            <span class="shared-dot" aria-label="Shared"><span class="tip">Shared</span></span>
+          }
+        </a>
+        <span class="date">{{ t.createdAt | date: 'M/d/y, h:mm a' | lowercase }}</span>
+      </li>
+    }
+  </ul>
+
+  @if (pageCount() > 1) {
+    <nav class="pager" aria-label="Pages">
+      <button class="cr-text-button" type="button" aria-label="First page" [disabled]="pageIndex() === 0 || loading()" (click)="goTo(0)">&lt;&lt;</button>
+      <button class="cr-text-button" type="button" aria-label="Previous page" [disabled]="pageIndex() === 0 || loading()" (click)="goTo(pageIndex() - 1)">&lt;</button>
+      <span>Page {{ pageIndex() + 1 }} of {{ pageCount() }}</span>
+      <button class="cr-text-button" type="button" aria-label="Next page" [disabled]="pageIndex() === pageCount() - 1 || loading()" (click)="goTo(pageIndex() + 1)">&gt;</button>
+      <button class="cr-text-button" type="button" aria-label="Last page" [disabled]="pageIndex() === pageCount() - 1 || loading()" (click)="goTo(pageCount() - 1)">&gt;&gt;</button>
+    </nav>
+  }
+}

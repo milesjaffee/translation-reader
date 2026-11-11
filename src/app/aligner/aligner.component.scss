@@ -31,6 +31,8 @@
 }
 
 form {
+  margin-top: 5vh;
+
   .columns,
   > .column {
     margin-bottom: 1rem;
@@ -109,26 +111,11 @@ form {
   border-radius: 4px;
 }
 
-.saved ul {
-  list-style: none;
-  padding: 0;
+.saved-link,
+.note-limit a {
+  color: var(--cr-blue);
+}
 
-  li {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.25rem 0;
-  }
-
-  .link {
-    all: unset;
-    cursor: pointer;
-    flex: 1;
-    text-decoration: underline;
-  }
-
-  .date {
-    color: var(--color-quaternary);
-    font-size: 0.85rem;
-  }
+.note-limit {
+  font-size: 0.85rem;
 }

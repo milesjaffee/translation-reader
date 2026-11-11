@@ -1,0 +1,128 @@
+@use 'screen-breakpoints' as bp;
+
+:host {
+  display: block;
+  --details-size: clamp(1.1rem, 2.65vw, 2rem);
+}
+
+h1 {
+  margin-top: 0;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.details {
+  margin-top: clamp(2rem, 10vw, 8rem);
+  padding-left: 1.5rem;
+  font-size: var(--details-size);
+
+  @include bp.bp-600w {
+    padding-left: 0;
+  }
+
+  p {
+    margin: 0 0 1.5em;
+  }
+}
+
+.sharing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+  padding-left: 2.6em;
+  transition: opacity 0.15s;
+
+  &.saving {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  @include bp.bp-600w {
+    padding-left: 0;
+  }
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25em 0.6em;
+}
+
+ngx-switch {
+  // The shared switch's "on" fill; use the Cratylus blue instead of its pink gradient.
+  --gradient-pink-to-violet: var(--cr-blue);
+}
+
+ngx-switch.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.hint {
+  font-size: 0.6em;
+  font-style: italic;
+}
+
+.copy {
+  all: unset;
+  display: inline-flex;
+  margin-left: 0.5em;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--cr-blue);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--cr-blue);
+  }
+}
+
+.source .field {
+  position: relative;
+  flex: 1;
+  max-width: 16em;
+  min-width: 10em;
+
+  input {
+    width: 100%;
+    font-size: inherit;
+    padding: 0.1em 3.5em 0.1em 0.2em;
+  }
+}
+
+.counter {
+  position: absolute;
+  right: 0.5em;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.55em;
+  font-style: italic;
+  pointer-events: none;
+}
+
+.owner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5em;
+  font-size: 1rem;
+
+  a {
+    color: var(--cr-blue);
+  }
+}
+
+.delete {
+  color: #c00;
+}
+
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 3em !important;
+}

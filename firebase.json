@@ -2,6 +2,10 @@
   "database": {
     "rules": "database.rules.json"
   },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
   "auth": {
     "providers": {
       "googleSignIn": {
@@ -9,5 +13,14 @@
         "supportEmail": "support@translation-reader-d125d.firebaseapp.com"
       }
     }
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "singleProjectMode": true
   }
 }

@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { AlignmentError, alignDocument } from './server/alignment-pipeline';
 import { getClient } from './server/gemini-client';
 import { TranslateApiError, getTranslationProvider, translate } from './server/translate';
+import { requireUser } from './server/verify-auth';
 
 // Secrets (GEMINI_API_KEY etc.) live in a gitignored .env in the project root.
 if (existsSync('.env')) {
@@ -37,8 +38,9 @@ app.get('/health', (_req, res) => {
  * If `target` is omitted or empty, the source is machine-translated first
  * (see TRANSLATION_PROVIDER in src/server/translate.ts).
  * Response: { source, translation, target, translated_by }
+ * Requires a signed-in user (Firebase ID token), since it spends the Gemini key.
  */
-app.post('/api/align', async (req, res) => {
+app.post('/api/align', requireUser, async (req, res) => {
   const body = req.body ?? {};
   const errors: Record<string, string> = {};
   for (const field of ['source_lang', 'source', 'target_lang', 'target']) {

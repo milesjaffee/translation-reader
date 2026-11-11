@@ -1,13 +1,20 @@
 import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideWindow } from '@ngx-templates/shared/services';
 import { AppComponent } from './app.component';
+import { AuthService } from './firebase/auth.service';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [provideWindow(), provideRouter([])],
+      providers: [
+        provideWindow(),
+        provideRouter([]),
+        // Keep Firebase out of unit tests.
+        { provide: AuthService, useValue: { user: signal(null) } },
+      ],
     }).compileComponents();
   });
 
